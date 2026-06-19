@@ -22,11 +22,10 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          pip install -e .
-          pip install ruff
+          pip install -e ".[dev]"
 
       - name: Lint
         run: ruff check .
 
-      - name: Import smoke test
-        run: python -c "import server; assert hasattr(server, 'mcp'); print('ok')"
+      - name: Test
+        run: pytest -q

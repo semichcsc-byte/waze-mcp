@@ -17,6 +17,13 @@ dependencies = [
     "pywaze>=1.0.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.5",
+]
+
 [project.urls]
 Homepage = "https://github.com/semichcsc-byte/waze-mcp"
 Repository = "https://github.com/semichcsc-byte/waze-mcp"
@@ -26,3 +33,6 @@ waze-mcp = "server:main"
 
 [tool.setuptools]
 py-modules = ["server"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

@@ -23,6 +23,10 @@ Waze's public livemap endpoints directly — the **same library Home Assistant's
 Optional params: `region` (US, NA, EU, IL, AU), `vehicle_type` (car, taxi, motorcycle),
 `avoid_toll_roads`, `avoid_ferries`, `real_time`.
 
+All tools are **read-only** (advertised via MCP tool annotations) and return
+**structured output** (typed JSON). Identical lookups are cached briefly to spare
+Waze's endpoints (see [Configuration](#configuration)).
+
 ## Requirements
 
 - **Python 3.10+** — `pywaze` and `mcp` require it. (On macOS the system Python 3.9
@@ -44,6 +48,22 @@ command:
 
 > On Windows, the interpreter is `.venv\Scripts\python.exe` instead of
 > `.venv/bin/python`.
+
+## Configuration
+
+All settings are optional and set via environment variables:
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `WAZE_MCP_REGION` | `EU` | Default region (`US`/`NA`/`EU`/`IL`/`AU`) when a call omits it |
+| `WAZE_MCP_TIMEOUT` | `60` | Per-request timeout (seconds) to Waze |
+| `WAZE_MCP_CACHE_TTL` | `60` | Seconds to cache identical lookups (`0` disables) |
+| `WAZE_MCP_AUTH_TOKEN` | — | If set, HTTP requests must send `Authorization: Bearer <token>` |
+| `WAZE_MCP_TRANSPORT` | `stdio` | Default transport (`stdio`/`streamable-http`/`sse`) |
+| `WAZE_MCP_HOST` / `WAZE_MCP_PORT` | `127.0.0.1` / `8000` | HTTP bind address |
+
+CLI flags (`--transport`, `--host`, `--port`, `--auth-token`) override the
+matching environment variable.
 
 ## Run
 
@@ -67,14 +87,34 @@ example Microsoft Scout's **Remote / Local URL** mode — start it with the
 ./.venv/bin/python server.py --transport streamable-http --host 127.0.0.1 --port 8000
 ```
 
-The MCP endpoint is then served at `http://<host>:<port>/mcp`. Flags:
+The MCP endpoint is served at `http://<host>:<port>/mcp`, and an unauthenticated
+`http://<host>:<port>/health` endpoint returns `ok` for liveness checks.
 
-- `--transport` — `stdio` (default), `streamable-http`, or `sse`
-- `--host` / `--port` — bind address for the HTTP transports (default `127.0.0.1:8000`)
+**Optional bearer-token auth** — require a token on every request (the `/health`
+endpoint stays open):
 
-> Exposing the server beyond `localhost` puts an unauthenticated tool endpoint on the
-> network. Keep it bound to `127.0.0.1`, or place it behind a tunnel / reverse proxy
-> with authentication.
+```bash
+WAZE_MCP_AUTH_TOKEN=secret \
+  ./.venv/bin/python server.py --transport streamable-http --host 0.0.0.0 --port 8000
+# or pass --auth-token secret
+```
+
+Clients then send `Authorization: Bearer secret` (e.g. Scout's *Bearer token* field).
+
+> Without a token the HTTP endpoint is unauthenticated. Keep it bound to `127.0.0.1`,
+> or set a token and/or place it behind a reverse proxy with TLS when exposing it
+> beyond localhost.
+
+### Docker
+
+```bash
+docker build -t waze-mcp .
+docker run -p 8000:8000 waze-mcp                                 # http://localhost:8000/mcp
+docker run -p 8000:8000 -e WAZE_MCP_AUTH_TOKEN=secret waze-mcp   # with auth
+```
+
+The image runs the `streamable-http` transport on `0.0.0.0:8000` and ships a
+`/health` healthcheck.
 
 ### VS Code
 
@@ -123,8 +163,23 @@ claude mcp add waze -- \
 - **Regions.** `EU` covers Europe; use `US`/`NA` for North America, `IL` for Israel,
   `AU` for Australia. Default is `EU`.
 - **Privacy.** Origin/destination coordinates are sent only to `waze.com`. The
-  underlying HTTP client logs request URLs at INFO level to **stderr** (not stdout, so
-  it does not interfere with the MCP protocol).
+  HTTP client's request logging is quieted to `WARNING`, so addresses/coordinates are
+  not written to the logs by default.
+
+## Development
+
+```bash
+./.venv/bin/pip install -e ".[dev]"   # pytest, pytest-asyncio, ruff
+./.venv/bin/ruff check .
+./.venv/bin/pytest -q                  # tests mock Waze — no network needed
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). CI runs ruff + pytest on Python 3.10–3.13.
+
+## Security
+
+The server is read-only and needs no credentials. For the HTTP transport's auth and
+hardening notes, see [SECURITY.md](SECURITY.md).
 
 ## Credits
 
