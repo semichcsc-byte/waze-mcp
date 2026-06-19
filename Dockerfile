@@ -13,6 +13,10 @@ WORKDIR /app
 COPY pyproject.toml README.md LICENSE server.py ./
 RUN pip install --no-cache-dir .
 
+# Drop privileges: run as an unprivileged user instead of root.
+RUN useradd --create-home --uid 10001 appuser
+USER appuser
+
 EXPOSE 8000
 ENV WAZE_MCP_TRANSPORT=streamable-http \
     WAZE_MCP_HOST=0.0.0.0 \

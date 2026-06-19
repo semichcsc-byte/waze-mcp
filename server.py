@@ -20,6 +20,7 @@ WAZE_MCP_CACHE_TTL, WAZE_MCP_AUTH_TOKEN, WAZE_MCP_TRANSPORT/HOST/PORT.
 from __future__ import annotations
 
 import argparse
+import hmac
 import logging
 import os
 import time
@@ -292,7 +293,8 @@ def _build_http_app(transport: str, token: str | None):
             async def dispatch(self, request, call_next):
                 if request.url.path == "/health":
                     return await call_next(request)
-                if request.headers.get("authorization") != expected:
+                provided = request.headers.get("authorization", "")
+                if not hmac.compare_digest(provided, expected):
                     return JSONResponse({"error": "unauthorized"}, status_code=401)
                 return await call_next(request)
 

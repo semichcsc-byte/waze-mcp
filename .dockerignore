@@ -1,0 +1,16 @@
+# Keep the Docker build context lean (the project folder may live in iCloud
+# Drive with a synced .venv and caches). The Dockerfile only COPYs the files it
+# needs, but excluding these also speeds up the context upload to the daemon.
+.git/
+.github/
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.env
+tests/
+*.code-workspace
