@@ -1,8 +1,13 @@
 name: Publish
 
 # Publishes to PyPI when a GitHub Release is published.
-# Requires a PyPI "trusted publisher" configured for this repo
-# (https://docs.pypi.org/trusted-publishers/) — no API token/secret needed.
+#
+# To enable:
+#   1. Configure a PyPI "trusted publisher" for this repo
+#      (https://docs.pypi.org/trusted-publishers/) — no API token/secret needed.
+#   2. Set a repo variable PYPI_PUBLISH=true
+#      (Settings → Secrets and variables → Actions → Variables).
+# Until then the job is skipped, so releases don't trigger a failing publish.
 
 on:
   release:
@@ -10,6 +15,7 @@ on:
 
 jobs:
   pypi:
+    if: ${{ vars.PYPI_PUBLISH == 'true' }}
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
