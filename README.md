@@ -120,3 +120,7 @@ claude mcp add waze -- \
 - Routing/geocoding by [`pywaze`](https://github.com/eifinger/pywaze) (Kevin Stillhammer),
   based on [WazeRouteCalculator](https://github.com/kovacsbalu/WazeRouteCalculator).
 - "Powered by Waze."
+
+## License
+
+[MIT](LICENSE) © 2026 Serge Michaux
