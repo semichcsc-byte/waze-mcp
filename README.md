@@ -46,6 +46,25 @@ rather than run by hand. Use the configs below.
 > Replace the paths if you move the project. The absolute paths assume the current
 > location.
 
+### Run over HTTP (remote hosts)
+
+By default the server uses **stdio**. To let a remote host connect over HTTP — for
+example Microsoft Scout's **Remote / Local URL** mode — start it with the
+`streamable-http` transport:
+
+```bash
+./.venv/bin/python server.py --transport streamable-http --host 127.0.0.1 --port 8000
+```
+
+The MCP endpoint is then served at `http://<host>:<port>/mcp`. Flags:
+
+- `--transport` — `stdio` (default), `streamable-http`, or `sse`
+- `--host` / `--port` — bind address for the HTTP transports (default `127.0.0.1:8000`)
+
+> Exposing the server beyond `localhost` puts an unauthenticated tool endpoint on the
+> network. Keep it bound to `127.0.0.1`, or place it behind a tunnel / reverse proxy
+> with authentication.
+
 ### VS Code
 
 Add to `.vscode/mcp.json` (workspace) or your user `mcp.json`:

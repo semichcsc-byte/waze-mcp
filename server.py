@@ -15,6 +15,7 @@ Transport: stdio (run with ``python server.py``).
 
 from __future__ import annotations
 
+import argparse
 from typing import Literal
 
 from mcp.server.fastmcp import FastMCP
@@ -154,8 +155,38 @@ async def geocode_address(address: str, region: str = "EU") -> dict:
 
 
 def main() -> None:
-    """Run the MCP server over stdio."""
-    mcp.run()
+    """Run the MCP server.
+
+    Defaults to stdio (how MCP clients normally launch it). Pass
+    ``--transport streamable-http`` (or ``sse``) to serve over HTTP so a
+    remote host — e.g. Microsoft Scout's "Remote / Local URL" mode — can
+    connect. Use ``--host``/``--port`` to control the HTTP bind address.
+    """
+    parser = argparse.ArgumentParser(description="Waze MCP server")
+    parser.add_argument(
+        "--transport",
+        choices=["stdio", "streamable-http", "sse"],
+        default="stdio",
+        help="Transport to use (default: stdio).",
+    )
+    parser.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="Bind host for HTTP transports (default: 127.0.0.1).",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=8000,
+        help="Bind port for HTTP transports (default: 8000).",
+    )
+    args = parser.parse_args()
+
+    if args.transport != "stdio":
+        mcp.settings.host = args.host
+        mcp.settings.port = args.port
+
+    mcp.run(transport=args.transport)
 
 
 if __name__ == "__main__":
