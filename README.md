@@ -22,17 +22,18 @@ Optional params: `region` (US, NA, EU, IL, AU), `vehicle_type` (car, taxi, motor
 
 ## Requirements
 
-- **Python 3.10+** (this project was set up with Python 3.13 via Homebrew; the macOS
-  system Python 3.9 will **not** work — `pywaze` and `mcp` require 3.10+).
+- **Python 3.10+** — `pywaze` and `mcp` require it. (On macOS the system Python 3.9
+  will not work; install a newer one, e.g. via Homebrew or python.org.)
 
 ## Setup
 
-The virtual environment is already created in `.venv`. To recreate it from scratch:
-
 ```bash
-/opt/homebrew/bin/python3.13 -m venv .venv
+python3 -m venv .venv          # use a Python 3.10+ interpreter
 ./.venv/bin/pip install -r requirements.txt
 ```
+
+> On Windows, the interpreter is `.venv\Scripts\python.exe` instead of
+> `.venv/bin/python`.
 
 ## Run
 
@@ -43,8 +44,8 @@ The virtual environment is already created in `.venv`. To recreate it from scrat
 The server speaks MCP over **stdio**, so it is normally launched by your MCP client
 rather than run by hand. Use the configs below.
 
-> Replace the paths if you move the project. The absolute paths assume the current
-> location.
+> In the client configs below, replace `/path/to/waze-mcp` with the absolute path to
+> your clone.
 
 ### Run over HTTP (remote hosts)
 
@@ -74,8 +75,8 @@ Add to `.vscode/mcp.json` (workspace) or your user `mcp.json`:
   "servers": {
     "waze": {
       "type": "stdio",
-      "command": "/Users/serge/Library/Mobile Documents/com~apple~CloudDocs/Projects/waze-mcp/.venv/bin/python",
-      "args": ["/Users/serge/Library/Mobile Documents/com~apple~CloudDocs/Projects/waze-mcp/server.py"]
+      "command": "/path/to/waze-mcp/.venv/bin/python",
+      "args": ["/path/to/waze-mcp/server.py"]
     }
   }
 }
@@ -89,8 +90,8 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 {
   "mcpServers": {
     "waze": {
-      "command": "/Users/serge/Library/Mobile Documents/com~apple~CloudDocs/Projects/waze-mcp/.venv/bin/python",
-      "args": ["/Users/serge/Library/Mobile Documents/com~apple~CloudDocs/Projects/waze-mcp/server.py"]
+      "command": "/path/to/waze-mcp/.venv/bin/python",
+      "args": ["/path/to/waze-mcp/server.py"]
     }
   }
 }
@@ -100,8 +101,8 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```bash
 claude mcp add waze -- \
-  "/Users/serge/Library/Mobile Documents/com~apple~CloudDocs/Projects/waze-mcp/.venv/bin/python" \
-  "/Users/serge/Library/Mobile Documents/com~apple~CloudDocs/Projects/waze-mcp/server.py"
+  "/path/to/waze-mcp/.venv/bin/python" \
+  "/path/to/waze-mcp/server.py"
 ```
 
 ## Notes & caveats
