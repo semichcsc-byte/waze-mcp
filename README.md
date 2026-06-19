@@ -1,5 +1,8 @@
 # Waze MCP Server
 
+[![CI](https://github.com/semichcsc-byte/waze-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/semichcsc-byte/waze-mcp/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A small [Model Context Protocol](https://modelcontextprotocol.io) server that exposes
 **Waze** routing and travel-time tools to MCP clients (Claude Desktop, Claude Code,
 VS Code, Cursor, …).
