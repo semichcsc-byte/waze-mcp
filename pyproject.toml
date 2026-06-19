@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "waze-mcp"
+version = "1.0.0"
+description = "MCP server exposing Waze travel-time, routing, and geocoding tools."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Serge Michaux" }]
+keywords = ["mcp", "waze", "model-context-protocol", "routing", "travel-time"]
+dependencies = [
+    "mcp>=1.2.0",
+    "pywaze>=1.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/semichcsc-byte/waze-mcp"
+Repository = "https://github.com/semichcsc-byte/waze-mcp"
+
+[project.scripts]
+waze-mcp = "server:main"
+
+[tool.setuptools]
+py-modules = ["server"]

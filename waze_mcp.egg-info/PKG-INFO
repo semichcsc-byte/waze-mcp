@@ -1,3 +1,19 @@
+Metadata-Version: 2.4
+Name: waze-mcp
+Version: 1.0.0
+Summary: MCP server exposing Waze travel-time, routing, and geocoding tools.
+Author: Serge Michaux
+License-Expression: MIT
+Project-URL: Homepage, https://github.com/semichcsc-byte/waze-mcp
+Project-URL: Repository, https://github.com/semichcsc-byte/waze-mcp
+Keywords: mcp,waze,model-context-protocol,routing,travel-time
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: mcp>=1.2.0
+Requires-Dist: pywaze>=1.0.0
+Dynamic: license-file
+
 # Waze MCP Server
 
 A small [Model Context Protocol](https://modelcontextprotocol.io) server that exposes

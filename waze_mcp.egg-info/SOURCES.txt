@@ -1,0 +1,10 @@
+LICENSE
+README.md
+pyproject.toml
+server.py
+waze_mcp.egg-info/PKG-INFO
+waze_mcp.egg-info/SOURCES.txt
+waze_mcp.egg-info/dependency_links.txt
+waze_mcp.egg-info/entry_points.txt
+waze_mcp.egg-info/requires.txt
+waze_mcp.egg-info/top_level.txt

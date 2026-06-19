@@ -16,11 +16,17 @@ Transport: stdio (run with ``python server.py``).
 from __future__ import annotations
 
 import argparse
+import logging
 from typing import Literal
 
+import httpx
 from mcp.server.fastmcp import FastMCP
 from pywaze import route_calculator
 from pywaze.route_calculator import WRCError
+
+# Quiet httpx's INFO request logging — it would otherwise emit full request URLs
+# (including origin/destination coordinates) to stderr.
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 mcp = FastMCP("waze")
 
@@ -75,7 +81,7 @@ async def get_travel_time(
                 alternatives=1,
                 real_time=real_time,
             )
-    except (WRCError, ValueError) as exc:
+    except (WRCError, ValueError, httpx.HTTPError) as exc:
         return {"error": str(exc)}
 
     if not routes:
@@ -102,8 +108,8 @@ async def get_routes(
 ) -> dict:
     """Get several alternative Waze routes between two locations.
 
-    Returns up to ``alternatives`` routes, each with duration, distance,
-    route name, and the street names along the way.
+    Returns up to ``alternatives`` routes (capped at 5), each with duration,
+    distance, route name, and the street names along the way.
     """
     try:
         region_code = _normalize_region(region)
@@ -115,10 +121,10 @@ async def get_routes(
                 vehicle_type=vehicle,
                 avoid_toll_roads=avoid_toll_roads,
                 avoid_ferries=avoid_ferries,
-                alternatives=max(1, alternatives),
+                alternatives=min(max(1, alternatives), 5),
                 real_time=real_time,
             )
-    except (WRCError, ValueError) as exc:
+    except (WRCError, ValueError, httpx.HTTPError) as exc:
         return {"error": str(exc)}
 
     if not routes:
@@ -144,7 +150,7 @@ async def geocode_address(address: str, region: str = "EU") -> dict:
         region_code = _normalize_region(region)
         async with route_calculator.WazeRouteCalculator(region=region_code) as client:
             coords = await client.address_to_coords(address)
-    except (WRCError, ValueError) as exc:
+    except (WRCError, ValueError, httpx.HTTPError) as exc:
         return {"error": str(exc)}
 
     return {
